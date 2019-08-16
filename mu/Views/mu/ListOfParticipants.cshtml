@@ -1,0 +1,272 @@
+﻿@model *******Controller.Models.VMreport
+
+@{var tempUser = Session["User"] as *******.Models.User;}
+
+@section headersection { 
+   
+        @Styles.Render("~/bundles/tablesortercss")
+        @Styles.Render("~/Content/themes/base/css")
+        @Scripts.Render("~/bundles/jquery")
+        @Scripts.Render("~/bundles/jqueryui")
+        @Scripts.Render("~/bundles/bootstrap")
+        @Scripts.Render("~/bundles/modernizr")
+        @Scripts.Render("~/bundles/tablesorter")      
+        @Styles.Render("~/Content/css")
+
+    <style>
+        .inlineleft {
+            display : inline;
+            float : left;
+        }
+
+
+
+    </style>
+}
+
+@section featured {
+    <section class="featured">
+         <img id="headerimage" src="@VirtualPathUtility.ToAbsolute("~/")Images/HeaderListOfParticipant.jpg" style="margin-left:auto; margin-right:auto; display:none;" />
+        <div class="content-wrapper">
+            <hgroup id="headertitle" class="title">
+                <h1>@ViewBag.Title</h1>
+                <h5>List of participants of the selected ******* course</h5>
+            </hgroup>
+        </div>
+    </section>
+}
+
+
+
+<div id="grid">
+
+    @if (ViewData.ModelState.IsValid)
+    {
+        if (Model.data.ContainsKey("ParticipantsList"))
+        {
+            System.Data.DataTable result = Model.data["ParticipantsList"].Tables[0];
+            <div  id="formButton" style="width:100%; margin-top: 3px; text-align: center;">
+          
+                      @using (Html.BeginForm("Search", "*******", FormMethod.Post,  new { enctype = "multipart/form-data" , @class = "inlineleft"}))
+                {
+                     <input id="search" type="submit" class="btn btn-primary" value="Back" /> 
+                }
+
+                <button id="print" type="button" class="btn btn-primary" >Print</button>
+         <button  type="button" id="sendtome" class="btn btn-primary" >Send to me</button>
+                @if (Model.hasFeedbackForm(Convert.ToString(ViewBag.courseId)))
+                {
+                        <button id="feedback" type="button" class="btn btn-primary" >Feedback results</button>
+                }
+         
+               </div> 
+            
+      
+                if (Model.data.ContainsKey("Course Info"))
+                {
+          <div>
+                <h3 style="margin-bottom:7px"  class="likeuwant" title="@Convert.ToString(Model.data["Course Info"].Tables[0].Rows[0]["Name"])">
+                                              @Convert.ToString(Model.data["Course Info"].Tables[0].Rows[0]["Name"]) 
+                 </h3>
+              @if (Model.data["Course Info"].Tables[0].Rows[0]["startdate"] is DBNull == false)
+              {
+         <p style="margin-bottom:auto;" title="@(Convert.ToDateTime(Model.data["Course Info"].Tables[0].Rows[0]["startdate"]).ToString("dd/MM/yyyy"))">Start date :
+                  @(Convert.ToDateTime(Model.data["Course Info"].Tables[0].Rows[0]["startdate"]).ToString("dd'/'MM'/'yyyy")) 
+                 </p>
+              }
+        @if (Model.data["Course Info"].Tables[0].Rows[0]["enddate"] is DBNull == false)
+        {
+         <p   title="@(Convert.ToDateTime(Model.data["Course Info"].Tables[0].Rows[0]["enddate"]).ToString("dd/MM/yyyy"))">End date :
+                  @(Convert.ToDateTime(Model.data["Course Info"].Tables[0].Rows[0]["enddate"]).ToString("dd'/'MM'/'yyyy")) 
+                 </p>
+        }
+              </div>
+                }
+    
+
+        <table id="mainTable"> 
+            <thead>
+                <tr>
+                    <th>First name</th>
+                    <th>Last name</th>
+                    <th>Job title</th>
+                    <th>E-mail</th>
+                    <th>Sector</th>
+                    <th>Status</th>
+                    <th class="dateFormat-ddmmyyyy">End date/ Due date</th>
+                   
+
+                </tr>
+            </thead>
+           
+                @foreach (System.Data.DataRow row in result.Rows)
+                {     <tr>
+                    
+                     <td>@Convert.ToString(row["First name"])</td>
+                     <td>@(Convert.ToString(row["Last name"]).ToUpper())</td>
+                     <td>@Convert.ToString(row["Job title"])</td>
+                  
+                        @if (Convert.ToString(row["E-mail"]) != "")
+                        {
+                            
+                    <td class="reportHelp"  title="@(Convert.ToString(row["E-mail"]))"><a href="mailto:@Convert.ToString(row["E-mail"])">@Convert.ToString(row["E-mail"])</a></td>
+                        }
+                        else
+                        {
+                    <td class="reportHelp" title="@(Convert.ToString(row["E-mail"]))">@Convert.ToString(row["E-mail"])</td>
+                        }
+                     
+                    
+                    <td>@Convert.ToString(row["Sector"])</td>
+
+                    @switch (Convert.ToString(row["Status"]))
+                    {
+                        case "Started":
+                           <td class="reportHelp  started"  style="background-color: #ffcc00; " title="@Convert.ToString(row["Status"])" data-text="2"><span class="started"> @Convert.ToString(row["Status"])</span> </td> 
+                            break;
+                        case "Passed":
+                         <td class="reportHelp passed" style="background-color: #99CC00; " title="@Convert.ToString(row["Status"])" data-text="1"><span class="passed"> @Convert.ToString(row["Status"])</span></td>
+                            break;
+                        case "Registered":
+                         <td class="reportHelp registered" style="background-color: #CC0033" title="@Convert.ToString(row["Status"])" data-text="3"><span class="registered"> @Convert.ToString(row["Status"])</span></td>
+                            break;
+                        case "Failed":
+                        case "Overdue":
+                        default:
+                         <td class="reportHelp overdue" style="background-color: #CC0033; color: white;" title="@Convert.ToString(row["Status"])"><span class="overdue">@Convert.ToString(row["Status"])</span></td>
+                            break;
+                    }
+                          
+                        
+                        
+                        <td>@((row["Enddate"] is DBNull) ? (row["Duedate"] is DBNull ? "" : Convert.ToDateTime(row["Duedate"]).ToString("dd/MM/yyyy")) : Convert.ToDateTime(row["Enddate"]).ToString("dd/MM/yyyy"))</td>
+
+               
+               
+                        
+                        
+                       </tr>  
+                } 
+                             
+       
+
+        </table>
+        
+        }
+
+    }
+</div> 
+
+   <div id="printdisclaimer" style="display: none;">
+        <p>
+            <i>Printed on @DateTime.Now.Date.ToString("dd'/'MM'/'yyyy") by @tempUser.fullname</i><br/>
+            <b>Data Privacy:</b> This document contains personal data, it should be kept private and destroyed once no longer needed.    
+        </p>
+    </div>
+
+
+<script type="text/javascript">
+    $(document).ready(function () {
+
+
+        $('button').click(function () {
+            // 'n' triggers the next sort on a column
+            $('#maintable').trigger('sorton', [[[5, 'n']]]);
+        });
+
+     
+        if ('@(Model.isPush)' != 'true') {
+        $("#mainTable").tablesorter({
+            theme: "report",
+            serverSideSorting: false,
+            sortList: [[5, 0]],
+            sortMultiSortKey: "shiftKey",
+       
+            widgets: ['zebra', 'stickyHeaders', 'filter', 'columnSelector'],
+            widgetOptions: {
+                filter_onlyAvail: 'filter-onlyAvail',
+                filter_functions: {
+                    4: true,
+                    5: true,
+                    6: true
+                }
+            }
+
+
+
+        });
+
+    } else {
+            $("#mainTable").tablesorter({
+            theme: "dropbox",
+            serverSideSorting: false,
+            sortMultiSortKey: "shiftKey",
+            widgets: ['stickyHeaders'],
+            widgetOptions: {
+
+            }
+             
+    });
+    $("th").css('background-image', 'none');
+    $("#layoutFooter").css('display', 'none');
+    $("#formButton").css('display', 'none');
+    $("#headertitle").css('display', 'none');
+    
+    }
+
+
+    $('#print').on("click", function () {
+        $("button").hide();
+        $("form").hide();
+        
+        $(".tablesorter-filter-row").hide();
+        document.getElementById('printdisclaimer').style.display = 'block';
+        document.getElementById('headerimage').style.display = 'block';
+        window.print();
+        $("button").show();
+        $("form").show();
+        $(".tablesorter-filter-row").show();
+        $("#printdisclaimer").hide();
+        $('#headerimage').hide();
+
+        
+    });
+
+
+
+    $('#feedback').on("click", function viewFeedback() {
+       
+        window.open('@*******.Models.Util.ServerData.getServerHostName()/clix/customs/Reports/FeedbackStatistics/Home/InstanceFeedback?componentID=@ViewBag.courseId', "_blank", "scrollbars=yes,resizable=yes", null);
+    });
+
+    $('#sendtome').on("click", function sendtome() {
+
+
+        $.ajax({
+            url: '@Url.Action("ExportListOfParticipants", "*******")',
+              data: {
+                  id: '@ViewBag.courseId'
+            },
+              type: 'post',
+              async: false,
+              success: function (data) {
+                  
+                      alert("The email has been sent successfully.");
+                
+
+              },
+              error: function (data) {
+                         alert('An error occured');
+              }
+          });
+
+      
+
+          });   
+    
+
+    
+
+    });
+
+</script>

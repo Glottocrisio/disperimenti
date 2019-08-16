@@ -1,0 +1,209 @@
+﻿@model *******Controller.Models.VMreport
+
+
+@{
+    ViewBag.Title = "Home Page";
+    int nbResult = 0;
+    
+}
+
+@section headersection { 
+    @Styles.Render("~/Content/css")
+    @Styles.Render("~/bundles/tablesortercss")
+    @Styles.Render("~/Content/themes/base/css")
+ 
+        @Scripts.Render("~/bundles/jquery")
+        @Scripts.Render("~/bundles/jqueryui")
+        @Scripts.Render("~/bundles/bootstrap")
+        @Scripts.Render("~/bundles/modernizr")
+        @Scripts.Render("~/bundles/tablesorter") 
+}
+
+@section featured {
+    <section class="featured">
+        <div class="content-wrapper">
+            <hgroup class="title">
+                <h1>******* Courses' Progress</h1>
+                <h5>Select the ******* course whose list  of participants you would like to see</h5>
+            </hgroup>
+        </div>
+    </section>
+}
+<div id="researchForm">
+    
+   @using (Html.BeginForm("Search", "*******", FormMethod.Post
+                                       ))
+   {
+
+    <fieldset> 
+        <legend>Research</legend>   
+       <table>
+            <tr><td>
+                @Html.EditorFor(model => model.CourseCode)
+            </td></tr>
+            <tr><td>
+            @Html.EditorFor(model => model.DayDate)
+            </td></tr>
+        </table>
+     
+        </fieldset>
+        <div id="formButton">
+            
+              <input id="search" type="submit" class="btn btn-primary" value="Search"/> 
+                    
+            <button  type="button" class="btn btn-warning" style="display: none;" onclick="location.href='@Url.Action("Reload", "*******")'">Reset search</button> 
+                 
+             
+          </div>    
+                 
+             }
+   
+    </div>
+
+   
+<div id="grid">
+
+    @if (ViewData.ModelState.IsValid)
+    {
+
+        if (Model.data.ContainsKey("CoursesList"))
+        {
+            System.Data.DataTable result = Model.data["CoursesList"].Tables[0];
+            nbResult = result.Rows.Count; 
+            if (nbResult == 0)
+            { 
+                      <h3>        </h3>
+                <h5 > No course has been found based on given criteria. Please refine your request.    </h5>
+              
+                
+                // <input type="button" class="btn btn-primary" name="*******" value="Back" style="font-size: 11px;">
+            }
+            else
+            {
+        <table id="mainTable">
+
+            <thead>
+                <tr>
+                    <th>Course code</th>
+                    <th>Course name</th>
+                    <th class="dateFormat-ddmmyyyy">Start date</th>
+                    <th class="dateFormat-ddmmyyyy">End date</th>
+                    <th>Registered</th>
+                    <th>Started</th>
+                    <th>Passed</th>
+                    <th>Failed</th>
+                    <th>Overdue</th>
+                </tr>
+            </thead>
+           
+                @foreach (System.Data.DataRow row in result.Rows)
+                {     
+                    <tr>
+                        <td>@Convert.ToString(row["CourseCode"])</td>
+
+                        @if (Convert.ToInt32(row["Registered"]) > 0 || Convert.ToInt32(row["Started"]) > 0 || Convert.ToInt32(row["Passed"]) > 0 || Convert.ToInt32(row["Failed"]) > 0 || Convert.ToInt32(row["Overdue"]) > 0)
+                    {
+  <td class="reportHelp" title="@(Convert.ToString(row["Name"]))">@Html.ActionLink(row["Name"].ToString(), "ListOfParticipants", "*******", new { id = row["component_id"].ToString()}, null)</td>
+                        }
+                    else
+                    {
+                    <td class="reportHelp" title="@(Convert.ToString(row["Name"]))">@Convert.ToString(row["Name"])</td>
+                        }
+                     
+                    
+                        <td>@((row["Startdate"] is DBNull) ? "" : Convert.ToDateTime(row["Startdate"]).ToString("dd'/'MM'/'yyyy"))</td>
+                        @if (row["Enddate"] is DBNull) { <td></td> } else if (Convert.ToInt32(Convert.ToDateTime(row["Enddate"]).Year) >=2098) { <td> Unlimited</td>;
+                        }
+                        else if (!((row["Enddate"]) is DBNull)) {<td>@Convert.ToDateTime(row["Enddate"]).ToString("dd'/'MM'/'yyyy")</td>}
+                        else {
+                        <td>   </td>}
+                        <td>@Convert.ToInt32(row["Registered"])</td>
+                        <td>@Convert.ToInt32(row["Started"])</td>
+                        <td>@Convert.ToInt32(row["Passed"])</td>
+                        <td>@Convert.ToInt32(row["Failed"])</td>
+                        <td>@Convert.ToInt32(row["Overdue"])</td>
+
+                    </tr>   
+                } 
+                             
+           
+
+
+        </table>
+            }
+        }
+        }
+</div> 
+
+
+<script type="text/javascript">
+
+
+    $(document).ready(function () {
+
+
+        if ('@(Model.isPush)' != 'true') {
+            $("#mainTable").tablesorter({
+                theme: "report",
+                serverSideSorting: false,
+                sortMultiSortKey: "shiftKey",
+                widgets: ['zebra', 'stickyHeaders'],
+                widgetOptions: {
+
+                }
+            });
+        } else {
+            $("#mainTable").tablesorter({
+                theme: "dropbox",
+                serverSideSorting: false,
+                sortMultiSortKey: "shiftKey",
+                widgets: ['stickyHeaders'],
+                widgetOptions: {
+
+                }
+             
+            });
+            $("th").css('background-image', 'none');
+            $("#layoutFooter").css('display', 'none');
+            $("#formButton").css('display', 'none');
+        }
+
+        $("#DayDate_DayDateStart").datepicker
+            ({
+                defaultDate: new Date(),
+                dateFormat: "dd/mm/yy",
+                showStatus: true,
+                showWeeks: true,
+                highlightWeek: true,
+                numberOfMonths: 1,
+                showAnim: "scale",
+                firstDay: 1
+
+        });
+
+        $("#DayDate_DayDateEnd").datepicker
+           ({
+               defaultDate: new Date(),
+               dateFormat: "dd/mm/yy",
+               showStatus: true,
+               showWeeks: true,
+               highlightWeek: true,
+               numberOfMonths: 1,
+               showAnim: "scale",
+               firstDay: 1
+
+           });
+
+
+        if ('@nbResult' == '0' ) {
+             $("button").show();
+        }
+           /* var search = document.getElementById(search);
+            var backtosearch = document.getElementById(backtosearch);
+            backtosearch.style.display = 'inline';
+            search.style.display = 'none';*/
+     
+    });
+
+
+</script>
