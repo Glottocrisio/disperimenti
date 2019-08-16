@@ -1,0 +1,360 @@
+﻿@model *******.Models.*******Report
+
+
+@{
+    int nrows = 0;
+    
+var tempUser = Session["User"] as CustomsBasis.Models.User;
+}
+
+@section headersection { 
+    
+        
+        @Styles.Render("~/Content/css")  
+      
+        @Styles.Render("~/Content/libcss")
+        @Scripts.Render("~/bundles/jquery")
+        @Scripts.Render("~/bundles/jqueryval")
+        @Scripts.Render("~/bundles/jqueryui")
+        @Scripts.Render("~/bundles/tablesorter") 
+        @Styles.Render("~/bundles/tablesortercss")
+        @Scripts.Render("~/bundles/modernizr")
+        @Scripts.Render("~/bundles/bootstrap")
+
+    
+ }
+
+
+@section featured {
+<style media="print">
+  .noPrint{ 
+      display: none; 
+  }
+
+
+    tr.group-header td{
+        background-color: #CCCCCC; 
+    }
+    
+    .group-name {
+        text-transform: uppercase !important;
+        font-weight: bold !important;
+    }
+    
+    .group-hidden {
+        display: none;
+    }
+
+    .cover {
+        width: 100%;
+        overflow:hidden;
+        z-index: 99998;
+        display: table;
+        padding: 40px 0 42px 0;
+    }
+
+    .covericon {
+        font-style: normal;
+        font-weight: normal;
+        text-decoration: inherit;
+        top:50%;
+        display: table-cell;
+        vertical-align: middle;
+        font-size: 96px;
+        color: #39C;
+        margin: auto;
+        z-index: 9999;
+    }
+
+    body .subtitle {
+        font-size: 14px;
+    }
+
+    .btn {
+       margin-right:5px;
+    }
+</style>
+
+   
+     <img id="headerimage" src="@VirtualPathUtility.ToAbsolute("~/")Images/HeaderListOfParticipant.jpg" style="margin-left:200px; display:none;" />
+    <section class="featured">
+        <div class="content-wrapper">
+            <hgroup class="title">
+                <h1>******* Training Campaign Attendance Overview</h1>
+                <h5 class="noPrint subtitle">Note that attendance is compared to CURRENT endorsement list, not as it was at time of training.</h5>
+            </hgroup>
+        </div>
+    </section>
+}
+       
+
+<div id="researchForm" class="tablesorter"> 
+   @using (Html.BeginForm("Search", "*******", FormMethod.Post, new { id = "myform", @Class = "*******pin" }))
+   {
+        <fieldset> 
+            <legend>Research</legend>   
+       
+            <table>
+                <tr style="flex-align:center; margin-bottom:20px;">
+                    <td class="noPrint" style="width:20%; margin-right:10px;">Year:</td>
+                    <td class="noPrint" style="width:80%; background-color:white !important">@Html.DropDownListFor(model => model.valuesYears.selectedValue, Model.valuesYears.values, new { id = "valuesYears" })</td>
+                </tr>
+                <tr style="flex-align:center; margin-bottom:20px;">
+                    <td class="noPrint" style="width:20%; margin-right:10px;">Campaign:</td>
+                    <td class="noPrint" style="width:80%; background-color:white !important" >
+                        @Html.DropDownListFor(model => model.dropdown.selectedValue, Model.dropdown.values, new { id = "coursesList" })
+                        <span id='courseListCover' class='covericon fa fa-spinner fa-pulse fa-3x fa-fw margin-bottom' style="display:none; font-size:20px;"></span>
+                    </td>
+                </tr>
+            </table>
+        </fieldset>
+        <div style="width:100%; margin-top: 10px; text-align: center;" id="formButton">
+            <button id="Search" type="button" class="btn btn-primary">Search </button>
+            @if (Model.data.ContainsKey("Endorsement") && Model.data["Endorsement"].Tables[0].Rows.Count > 0)
+            {
+                <button id="print" type="button" class="btn btn-primary">Print</button>
+                if (Request.Url.ToString().Contains("/ilp/"))
+                {
+                    <button type="button" class="btn btn-primary" onclick="window.open('@CustomsBasis.Models.Util.ServerData.getServerHostName()/ilp/customs/reports/feedbackstatistics/*******/DirectAccess/?courseName=@Model.dropdown.selectedValue&year=@Model.valuesYears.selectedValue','_blank');">View feedback results</button>
+                }
+                else
+                {
+                    <button type="button" class="btn btn-primary" onclick="window.open('@CustomsBasis.Models.Util.ServerData.getServerHostName()/clix/customs/reports/feedbackstatistics/*******/DirectAccess/?courseName=@Model.dropdown.selectedValue&year=@Model.valuesYears.selectedValue','_blank');">View feedback results</button>
+                }
+
+            }
+        </div>        
+   }
+</div>
+
+
+<div id="grid">
+
+@if (ViewData.ModelState.IsValid)
+{
+    if (Model.data.ContainsKey("Endorsement"))
+    {
+        System.Data.DataTable result = Model.data["Endorsement"].Tables[0];
+        nrows = result.Rows.Count;
+        if (result.Rows.Count == 0)
+        {
+            <h4> Please select a course!</h4>
+        }
+        else
+        {    
+            <div>
+                <h3 style="font-weight:bold; color:#666;  font-size:24px;" title="@Convert.ToString(Model.data["Endorsement"].Tables[0].Rows[0]["coursename"])">@Convert.ToString(Model.data["Endorsement"].Tables[0].Rows[0]["coursename"])</h3>
+            </div>
+            
+            <table id="mainTable" >
+                <thead>
+                    <tr>
+                        <th class="group-word-99 filter-select filter-match">List of staff</th>
+                        <th class="group-date-month " data-sorter="shortDate" data-date-format="ddmmyyyy">Start date</th>
+                        <th class="group-date-month" data-sorter="shortDate" data-date-format="ddmmyyyy">End date</th>
+                        <th class="group-word-10">Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                @foreach (System.Data.DataRow row in result.Rows)
+                {     
+                    <tr>
+                        <td data-name="@Convert.ToString(row["endorsment"])">@Convert.ToString(row["name"])</td>
+                        @if (row["startdate"] is DBNull)
+                        {
+                        <td>&nbsp;</td><td>&nbsp;</td>
+                        }
+                        else if (Convert.ToDateTime(row["startdate"]) <= DateTime.Today)
+                        { 
+                            <td>@((row["startdate"] is DBNull) ? "" : Convert.ToDateTime(row["startdate"]).ToString("dd/MM/yyyy"))</td>
+                            <td>@((row["enddate"] is DBNull) ? "" : Convert.ToDateTime(row["enddate"]).ToString("dd/MM/yyyy"))</td>}
+                        else
+                        {
+                            <td>@((row["startdate"] is DBNull) ? "" : Convert.ToDateTime(row["startdate"]).ToString("dd/MM/yyyy"))</td>
+                            <td>@((row["enddate"] is DBNull) ? "" : Convert.ToDateTime(row["enddate"]).ToString("dd/MM/yyyy"))</td>
+                        }
+        
+          
+                        @switch (Convert.ToString(row["status"]).ToLower())
+                        {
+                            case "attendance record outstanding":
+                            case "missing from schedule":
+                            case "to be rescheduled":
+                            case "scheduling overdue":
+                                <td class="reportHelp notvalido" title="@Convert.ToString(row["Status"])">@Convert.ToString(row["Status"])</td> 
+                                break;
+                            case "input error":
+                                <td class="reportHelp attention" title="@Convert.ToString(row["Status"])">@Convert.ToString(row["Status"])</td> 
+                                break;
+                            case "tutor":
+                                <td class="reportHelp tutor" title="@Convert.ToString(row["Status"])"><i>@Convert.ToString(row["Status"]).ToString().ToUpper()</i></td> 
+                                break;
+                            case "to be scheduled":
+                                <td class="reportHelp warning" title="@Convert.ToString(row["Status"])">@Convert.ToString(row["Status"])</td> 
+                                break;
+                            case "attended":
+                                <td class="reportHelp valido" title="@Convert.ToString(row["Status"])">@Convert.ToString(row["Status"])</td>
+                                break;
+                            default: 
+                                <td class="reportHelp" title="@Convert.ToString(row["Status"])">@Convert.ToString(row["Status"])</td>
+                                break;
+                        }         
+                    </tr>   
+                } 
+                </tbody>             
+            </table>
+        }
+    }
+}   
+</div> 
+
+  <div id="printdisclaimer" style="display: none;">
+        <p>
+            <i>Printed on @DateTime.Now.Date.ToString("dd'/'MM'/'yyyy") by @tempUser.fullname</i><br/>
+            <b>Data Privacy:</b> This document contains personal data, it should be kept private and destroyed once no longer needed.    
+        </p>
+    </div>
+
+<script type="text/javascript">
+
+
+        $("#mainTable").tablesorter({
+            theme: "report",
+            sortList: [[0]],
+            serverSideSorting: false,
+            sortMultiSortKey: "shiftKey",
+            widgets: ['zebra', 'stickyHeaders', 'filter', 'group'],
+            textExtraction: {
+                0: function(node, table, cellIndex) { return $(node).data("name"); }
+            },
+            widgetOptions: {
+                filter_functions: {
+                    0: false,
+                    1: true,
+                    2: true,
+                    3: true,
+                    4: true
+                },
+                group_collapsible: true,
+                group_collapsed: false,
+                group_months: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
+                group_saveGroups: true,
+                ignoreCase: false,
+                group_dateString: function (date) {
+                    return date.toLocaleString();
+                },
+
+                //group_callback: function ($cell, table) {
+                   
+                //  return  $(this).value($(this).value().toUpperCase);
+                //},
+
+
+                print_extraCSS: '.group-name {text-transform: uppercase;font-weight: bold;} .tablesorter-blue th, .tablesorter-blue thead td {font: bold 12px/18px Arial, Sans-serif;} table {font: 12px Verdana,Arial,Helvetica,sans-serif;}',
+
+
+                output_dataAttrib: 'data-name', // data-attribute containing alternate cell text
+                output_headerRows: true,        // output all header rows (multiple rows)
+                output_saveRows: ':not(.group-header)',         // (a)ll, (v)isible, (f)iltered or jQuery filter selector ':not(.group-header)'
+                output_includeHTML: false,        // output includes all cell HTML (except the header cells)
+                output_trimSpaces: false,       // remove extra white-space characters from beginning & end
+                output_popupStyle: 'width=800,height=600'
+            }
+        });
+
+        //$("#mainTable tr[role='row']").find('td:eq(0),th:eq(0)').hide()
+        //$("#mainTable-sticky tr[role='row']").find('td:eq(0),th:eq(0)').hide()
+
+        $('.print').click(function () {
+            $('.tablesorter').trigger('printTable');
+        });
+
+        $('#print').on("click", function () {
+            $("button").hide();
+            $("input").hide();
+            $(".tablesorter-filter-row").hide();
+            $('#printdisclaimer').show();
+            $("#headerimage").show();
+            window.print();
+
+            
+            $("button").show();
+            $("input").show();
+            $(".tablesorter-filter-row").show();
+            $('#printdisclaimer').hide();
+            $("#headerimage").hide();
+       
+        });
+
+        //$('#backendo').on("click", function () {
+        //    var x = document.getElementById("endo");
+        //    if (x.style.display === "none") {
+
+        //        $("#mainTable tr[role='row']").find('th:eq(0), td:eq(0)').show();
+             
+        //    } else {
+        //        $("#mainTable tr[role='row']").find('th:eq(0), td:eq(0)').hide();
+        //    }
+           
+
+        //});
+
+        if ('@nrows' > '0') {
+
+            $("button").show();
+
+        }
+
+    $('#Search').click(function () {
+        $("#myform").submit();
+    });
+
+    $("#myform").submit(function (event) {
+        if ($(this).valid()) {
+            $('#cover').show();
+        }
+    })
+
+    $(document).ready(function () {
+        //$("#coursesList").prop('selectedIndex', -1);
+        $("#myform").validate({
+            ignore: "hidden",
+            rules: {
+                "dropdown.selectedValue": "required"
+            },
+           messages: {
+                "dropdown.selectedValue": ""
+            },
+            /*     errorElement: 'label',
+            */
+        });
+
+    $("#valuesYears").change(function (event) {
+        $("#coursesList").hide();
+        $("#courseListCover").show();
+        $.ajax({
+            dataType: "json",
+            cache: !0,
+            async: true,
+            url: "@Url.Action("LoadCourses", "*******")",
+           type: 'post',
+            data: { SelectedYear: $(this).val() },
+            success: function (data) {
+                $("#coursesList").empty();
+                $.each(data, function (index, itemData) {
+                    $("#coursesList").append($('<option/>', { value: itemData.Value, text: itemData.Text }));
+                });
+                
+            },
+            complete: function () {
+                $('#courseListCover').hide();
+                $("#coursesList").show();
+            }
+        });
+        
+    }); 
+});
+            
+               
+            
+</script>
