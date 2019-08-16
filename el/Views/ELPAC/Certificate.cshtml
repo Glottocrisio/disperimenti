@@ -1,0 +1,735 @@
+﻿@model *******.Models.*******Report
+
+@{
+   
+    int i=2;
+    
+   
+  
+}
+@section headersection {
+    
+   @Styles.Render("~/bundles/tablesortercss")
+        @Styles.Render("~/Content/css")  
+        @Styles.Render("~/Content/libcss")
+        @Scripts.Render("~/bundles/jquery")
+        @Scripts.Render("~/bundles/jqueryval")
+        @Scripts.Render("~/bundles/jqueryui")
+        @Scripts.Render("~/bundles/tablesorter") 
+        @Scripts.Render("~/bundles/modernizr")
+        @Scripts.Render("~/bundles/bootstrap")
+        @Scripts.Render("~/bundles/bootstraptoggle")
+
+
+}
+
+@section featured {
+<style>
+    table {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    
+    display: inline-block;
+    *display: inline;
+    zoom: 1
+        }
+
+    div.buttons p {display: inline-block;}
+
+div.buttons p:last-child {margin-left: 20px;}
+ 
+
+    
+.tablesorter-report {
+	width: 100%;
+	background-color: #fff;
+	margin: 10px 0 15px;
+	text-align: left;
+	border-spacing: 0;
+	border: #cdcdcd 1px solid;
+	border-width: 1px 0 0 1px;
+}
+
+table, th, td {
+	border: #cdcdcd 1px solid;
+	border-width: 0 1px 1px 0;
+}
+  
+    ul {
+  list-style-type: none;
+}
+
+    .profilepic {
+      background-repeat: no-repeat; 
+      background-size: cover;
+      background-position: center center;
+      min-width: 44px;
+      min-height: 44px;
+      border-radius: 50%;
+      border: solid 1px #ddd;
+      margin-right: 16px;
+      display:inline-block;
+}
+
+    </style>
+}
+
+    
+
+    <section class="featured">
+        
+        <img id="headerimage" src="@VirtualPathUtility.ToAbsolute("~/")Images/HeaderListOfParticipant.jpg" style="margin-left:auto;margin-right:auto;display:none;" />
+        <div class="content-wrapper">
+            <hgroup class="title">
+                <h1>******* Certificate of Competence</h1>
+                
+            </hgroup>
+        </div>
+    </section>
+    
+
+@{
+    var CurrentUser = Session["User"] as CustomsBasis.Models.User;      <!--  why and how are they different?-->
+    var curuser = ViewContext.HttpContext.User;
+    var photpathhead = "https://*******.*******.int/clix/data/PROFILE/PICTURE/";
+    var photpathfoot = "?dmy=1548944108081";
+    string currentAction = ViewContext.Controller.ValueProvider.GetValue("action").RawValue.ToString();
+ 
+
+}
+
+ 
+   
+<body>
+
+<h2 id="exname">@Convert.ToString(Model.data["cardinfo"].Tables[0].Rows[0]["lastname"]).ToUpper()  @Convert.ToString(Model.data["cardinfo"].Tables[0].Rows[0]["firstname"])</h2>
+
+
+   
+
+      @using (Html.BeginForm("getCertificate", "*******", FormMethod.Post, new { enctype = "application/x-www-form-urlencoded", id = "getCertificateForm", @class = "nospin" }))
+      { 
+           <input type="hidden" id="personID" name="personID" value="@Model.data["cardinfo"].Tables[0].Rows[0]["person_id"]"/>
+      }
+
+  
+  <div class="container" >
+    <b></b> 
+
+
+     <img style=" border:solid; border-color:#7ac0da; border-radius:100px; float:left" src="@photpathhead@Convert.ToString(Model.data["cardinfo"].Tables[0].Rows[0]["picture"])@photpathfoot"  >
+<div style="float:right;">
+      
+     @if (ViewData.ModelState.IsValid)
+     {
+
+         if (Model.data.ContainsKey("roles"))
+         {
+             System.Data.DataTable resulto = Model.data["roles"].Tables[0];
+             System.Data.DataRow row = resulto.Rows[0];
+                 
+             
+             
+                          
+    
+        <h4>Roles</h4>
+         
+         <ul >
+             @while (i < 8)
+             {
+
+                 if (resulto.Rows[0][i] != "")
+                 {
+                     
+
+                     switch (Convert.ToString(resulto.Rows[0][i]))
+                     {
+
+
+                         case "Valid":
+                             if (i == 2)
+                             {
+            <li style="background-color:#99CC00;    float:right;">******* Administrator </li>
+             <li></li>}
+                             else if (i == 3)
+                             {
+                        <li style="background-color:#99CC00;    float:right;">******* Paper 1 </li>
+                 <li></li>
+                             }
+                             else if (i == 4)
+                             {
+                        <li style="background-color:#99CC00;    float:right;">******* Paper 2 ELE </li>
+                          <li></li>   }
+                             else if (i == 5)
+                             {
+                        <li style="background-color:#99CC00;    float:right;">******* Paper 2 OPE </li>
+                             <li></li>}
+                             else if (i == 6)
+                             {
+                            <li style="background-color:#99CC00;    float:right;">******* Paper 3 ELE </li>
+                             <li></li>}
+                             else if (i == 7)
+                             {
+                            <li style="background-color:#99CC00;    float:right;">******* Paper 3 OPE </li>
+                             <li></li>}
+                             break;
+
+                         case "Attention required":
+
+                             if (i == 4)
+                             {
+                        <li style="background-color:#FF9933;    float:right;">******* Paper 2 ELE </li>
+                             <li></li>}
+                            
+                             else if (i == 5)
+                             {
+                        <li style="background-color:#FF9933;    float:right;">******* Paper 2 OPE </li>
+                             <li></li>}
+                             
+                             else if (i == 6)
+                             {
+                            <li style="background-color:#FF9933;    float:right;">******* Paper 3 ELE </li>
+                             <li></li>}
+                             else if (i == 7)
+                             {
+                            <li style="background-color:#FF9933;    float:right;">******* Paper 3 OPE </li>
+                             <li></li>}
+
+                             break;
+
+                         case "Highest priority":
+
+
+                             if (i == 4)
+                             {
+                        <li style="background-color:#CC0033;    float:right;">******* Paper 2 ELE </li>
+                             <li></li>}
+                             else if (i == 5)
+                             {
+                        <li style="background-color:#CC0033;    float:right;">******* Paper 2 OPE </li>
+                             <li></li>}
+                             else if (i == 6)
+                             {
+                            <li style="background-color:#CC0033;    float:right;">******* Paper 3 ELE </li>
+                             <li></li>}
+                             else if (i == 7)
+                             {
+                            <li style="background-color:#CC0033;    float:right;">******* Paper 3 OPE </li>
+                             <li></li>}
+
+
+
+                             break;
+
+                         case "Overdue":
+
+                             if (i == 4)
+                             {
+                        <li style="background-color:#808080;    float:right;">******* Paper 2 ELE </li>
+                             <li></li>}
+                             else if (i == 5)
+                             {
+                        <li style="background-color:#808080;    float:right;">******* Paper 2 OPE </li>
+                             <li></li>}
+                             else if (i == 6)
+                             {
+                            <li style="background-color:#808080;    float:right;">******* Paper 3 ELE </li>
+                             <li></li>}
+                             else if (i == 7)
+                             {
+                            <li style="background-color:#808080;    float:right;">******* Paper 3 OPE </li>
+                             <li></li>}
+
+                     
+                            <li class="reportHelp" style="background-color:#808080;" title="Expired"></li>
+                             break;
+                         default:
+                         <li class="reportHelp" style="background-color:#fff;"> </li>
+                             break;
+
+                     }
+
+                 }
+
+
+
+                 i++;
+             }
+             
+           
+             </ul>
+         }
+     }
+    </div>
+    <div style="text-align:left" > <span style=" font-style:italic"  > </span>@Convert.ToString(Model.data["cardinfo"].Tables[0].Rows[0]["JOB_TITLE"])</div> 
+      <div style="margin-bottom:7px; margin-top:10px; text-align:left "><span style=" font-style:italic" >Organization:  </span>
+                  @Convert.ToString(Model.data["roles"].Tables[0].Rows[0]["Organization"]) 
+                 </div>
+                <div style="margin-bottom:7px; margin-top:10px; text-align:left; margin-bottom:auto" >
+                            <span style=" font-style:italic"  > Country:       </span>          @Convert.ToString(Model.data["cardinfo"].Tables[0].Rows[0]["country_name"]) 
+                 </div>
+
+               
+       </div>
+</body>
+ 
+
+<div>
+    
+    
+    @if (!(Model.user.isSysAdmin()))
+    {
+       <button class="btn btn-primary" style="font-size: 11px;" onclick="gobackk();" > Back  </button>}
+
+    else if (Model.user.is*******examiner() && !(Model.user.is*******FoP())) { } else
+    {
+         <button class="btn btn-primary" style="font-size: 11px;" onclick="goback();" > Back  </button>
+    
+                                                                                                      }
+    
+    @if (Model.user.is*******FoP() || Model.user.isSysAdmin())
+    {
+                   <button  type="button" class="btn btn-primary" title="Coming soon..." style="font-size: 11px;" disabled="disabled">Remove from organization</button>
+    }
+
+
+<button type="button" class="btn btn-primary"  title="Coming soon..." style="font-size: 11px;" disabled="disabled"> Modify role</button>
+
+    @if (Model.user.is*******examiner() || Model.user.isSysAdmin())
+    {
+<button type="button" class="btn btn-primary" style="font-size: 11px;" onclick="location.href='https://*******.*******.int/ilp/pages/internal-dashboard.jsf?dashboardId=6114867 '"; >Modify personal information</button>
+    
+<button type="button" class="btn btn-primary" style="font-size: 11px;"  onclick="location.href=' https://*******.*******.int/clix/customs/Reports/Catalogue/Course/code/*******-REF'"; > Register for refresher course</button>
+    
+<button type="button" class="btn btn-primary" style="font-size: 11px;"  onclick="location.href = 'mailto:' + '@Model.user.*******FopEmail'" >Contact ******* Focal Point</button>
+    }
+<button type="button" class="btn btn-primary" style="font-size: 11px;"  onclick="location.href = "mailto:*******@*******.int"">Contact ******* Administrator</button>
+
+
+  
+
+        
+        @*
+    else
+    {
+        <button type="button" class="btn btn-primary" style="font-size: 11px;"   onclick="location.href='@Url.Action("Index", "*******")'"> Back  </button>
+    
+    
+    }*@
+    @*<button type="button" class="btn btn-info" style="width: 300px;" onclick="getCertificate();" ><span class="glyphicon glyphicon-education "></span>   Download Certificate of Competency</button>*@
+      
+    <button id="print" type="button" class="btn btn-primary" >Print Certificate of Competency</button> 
+</div>
+
+
+<div class="modal fade" tabindex="-1" role="dialog" id="modalComment">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title">Introduce a comment</h4>
+      </div>
+      <div class="modal-body">
+          <label>Your comment:</label>
+          <textarea id="commentInput" rows="5"></textarea>
+          <input type="hidden" name="id" id="commentId" value="" />
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="reportHelp btn btn-success" onclick="submitComment();">Submit comment</button>
+         <button type="button" class="reportHelp btn btn-primary" data-dismiss="modal">Close</button>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+<div class="modal fade" tabindex="-1" role="dialog" id="modalDelete">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title">Delete  comment</h4>
+      </div>
+      <div class="modal-body">
+           <label>Are you really sure to delete this comment? It will be deleted definitively.</label>
+          <input type="hidden" name="id" id="delCommentId" value="" />
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="reportHelp btn btn-danger" onclick="deleteComment();">Delete</button>
+         <button type="button" class="reportHelp btn btn-primary" data-dismiss="modal">Close</button>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+
+
+
+<div id="grid"> 
+
+
+ 
+         @if (ViewData.ModelState.IsValid)
+         {
+
+
+             if (Model.data.ContainsKey("courseinfo"))
+             {
+
+                 System.Data.DataTable result = Model.data["courseinfo"].Tables[0];
+
+
+                if(result.Rows.Count>0){
+                 <table id="courses">
+               
+                     <thead>
+                    <tr>
+                        <th>Courses</th>
+                        <th>Location</th>
+                        <th>Start date</th>
+                        <th>End date</th>                     
+                      
+
+
+                    </tr>
+                </thead>
+
+                 @foreach (System.Data.DataRow row in result.Rows)
+                 {    
+                    
+
+                 <tr> 
+                     
+                     <td  class="reportHelp" title="@(Convert.ToString(row["Course"]))">@(Convert.ToString(row["Course"]))</td>
+
+                     <td  class="reportHelp" title="@(Convert.ToString(row["Location"]))">@(Convert.ToString(row["Location"]))</td>
+
+@*                        <td  class="reportHelp" title="@(Convert.ToString(row["coursemanager"]))">@(Convert.ToString(row["coursemanager"]))</td>*@
+                    
+                     <td class="reportHelp" title="@(Convert.ToDateTime(row["Startdate"]).ToString("dd/MM/yyyy"))">@(Convert.ToDateTime(row["Startdate"]).ToString("dd/MM/yyyy"))</td>
+
+                      <td class="reportHelp" title="@(Convert.ToDateTime(row["Enddate"]).ToString("dd/MM/yyyy"))"> @(Convert.ToDateTime(row["Enddate"]).ToString("dd/MM/yyyy"))</td>
+
+
+                 </tr>
+                  
+
+                         
+                 }
+                     </table>
+                     
+        
+
+         }
+ 
+         
+             }
+         }   
+         
+         
+   </div>
+
+
+
+ <button id="insert" class="reportHelp btn btn-primary comment" onclick="insertComment(this)" title="Insert a comment"  data-target="#modalComment" data-action="insert" >
+         <span class="glyphicon glyphicon-plus"></span>  Insert comment</button>
+
+     
+<div id="partialcom">
+@Html.Partial("_Comments", Model.comments)
+ </div>
+
+
+  <div id="printdisclaimer" style="display: none;">
+        <p>
+            <i>Printed on @DateTime.Now.Date.ToString("dd'/'MM'/'yyyy") by @CurrentUser.fullname</i><br/>
+            <b>Data Privacy:</b> This document contains personal data, it should be kept private and destroyed once no longer needed.    
+        </p>
+     @* <p>
+
+          <img src="@VirtualPathUtility.ToAbsolute("~/")Images/HeadOfInstituteSignature.jpg" style="margin-left: 600px;" />
+      </p>*@
+    </div>
+
+
+
+
+<script type="text/javascript">
+
+
+    //$("#getCertificateForm").submit(function (event) {
+    //    $('#feedbackText').text("The file is being generated, please wait.");
+    //    $('#modalFeedback').modal('show');
+    //});
+
+
+    function getCertificate() {
+        $("#getCertificateForm").submit();
+    }
+
+    function gobackk() {
+
+        window.location.href = '@CustomsBasis.Models.Util.ServerData.getServerHostName()/clix/customs/Reports/*******/*******/Personrole?id=' + '@Model.userstak.ToString()';
+        }
+    
+
+   
+
+    function removestaff() {
+        // if current user is ******* FoP
+        exname = subStrAfterChars(($('#exname').text()), ':', 'b');
+        window.location.href = 'mailto:pieke.satijn@*******.int?subject=ACTION:%20Remove%20from%20staff&body=Dear%20Mr.%20Satijn,%0A%0AA%20new%20user%20has%20signed%20a%20license%20to%20use%20*******.%20Please%20delete%20him%20from%20the%20*******%20Competency%20Scheme.%0A%0AName%20of%20the%20Examiner:%0AName%20of%20the%20*******%20Focal%20Point:%0AEmail%20of%20the%20*******%20Focal%20Point:%0AName%20of%20the%20Examiner:%0A%0AThank%20you%20,%0AKind%20Regards%20,%0A%0A' + exname;
+        // else if current user is Examiner redirect to https://*******.*******.int/ilp/pages/coursedescription.jsf?courseId=6895442&catalogId=1121948
+    }
+
+    // Insert comment + update comment
+    $('.comment').click(function () {
+        _comment = $(this).data('comment');
+        _id = $(this).data('id');
+        _action = $(this).data('action');
+
+        switch (_action) {
+            case "insert":
+                $(".modal-title").text("Introduce a comment");
+                $("#commentInput").val('');
+                $('#commentId').val('');
+                $('#modalComment').modal('show');
+                break;
+            case "update":
+                $(".modal-title").text("Modify comment");
+                $("#commentInput").val(_comment);
+                $('#commentId').val(_id);
+                $('#modalComment').modal('show');
+                break;
+
+            case "delete":
+                $('#delCommentId').val(_id);
+                $('#modalDelete').modal('show');
+                break;
+        }
+    });
+
+
+    function deleteComment() {
+
+        $('#modalDelete').modal('hide');
+        var _commentId = $("#delCommentId").val();
+
+        $.ajax({
+            url: '@Url.Action("deleteComment", "*******")',
+                type: 'post',
+                async: true,
+                data: {
+                    id: _commentId
+                },
+                success: function (data) {
+                   
+                 //   alert("Comment deleted successfully.");
+
+                },
+                error: function (data) {
+                  
+                    alert("An error occured."); 
+                }
+            });
+
+
+    }
+
+    function submitComment() {
+
+        if ($("#commentId").val() == 0) {
+        $('#modalComment').modal('hide');
+       
+        var comment = $("#commentInput").val();
+
+       
+            $.ajax({
+                url: '@Url.Action("insertComment", "*******")',
+                type: 'post',
+                async: true,
+                data: {
+                    id: '@Model.data["cardinfo"].Tables[0].Rows[0]["person_id"]', comment: comment
+                },
+                success: function (data) {
+                   
+              //   alert("Comment introduced successfully."); 
+                  
+
+                },
+                error: function (data) {
+                   
+                  alert("An error occured."); 
+                }
+            });
+        }
+
+        else {
+
+            $('#modalComment').modal('hide');
+           
+            var _comment = $("#commentInput").val();
+            var _commentId = $("#commentId").val();
+            
+
+
+            $.ajax({
+                url: '@Url.Action("updateComment", "*******")',
+                type: 'post',
+                async: true,
+                data: {
+                    comment: _comment, id: _commentId
+                },
+
+            });
+
+
+        }
+    }
+
+  
+
+
+    $('#showcom').click(function (event) {
+
+        if (!$('#collapseOne').hasClass('in')) {
+            $.ajax({
+                url: '@Url.Action("displayComments")',
+                contentType: "application/html; charset=utf-8",
+                type: 'get',
+                data: { id: '@Model.data["cardinfo"].Tables[0].Rows[0]["person_id"].ToString()' },
+                cache: !0,
+                datatype: "html",
+                async: true
+            });
+
+        }
+
+
+
+        });
+
+    $('#print').on("click", function () {
+
+
+        $("span").show();
+
+        $("button").hide();
+        $("form").hide();
+        document.getElementById('headerimage').style.display = 'block';
+        document.getElementById('printdisclaimer').style.display = 'block';
+        $(".tablesorter-filter-row").hide();
+
+        setTimeout(function () {
+            window.print();
+            $("button").show();
+            $("form").show();
+            document.getElementById('headerimage').style.display = 'none';
+            document.getElementById('printdisclaimer').style.display = 'none';
+            $("span[class!= 'heading']").hide();
+            $(".tablesorter-filter-row").show();
+        }, 200);
+
+
+    });
+
+
+    function goback() {
+        window.history.back();
+    }
+
+    $(document).ready(function () {
+
+
+        $("#courses").tablesorter({
+            theme: "blue",
+            
+            widgets: ['zebra', 'stickyHeaders'],
+           
+        });
+
+
+    });
+
+    
+ 
+    //$('#partialcom p button').on('click', function () {
+
+
+    //    if ($(this).data('name') == 'update') {
+    //         comment = $(this).parent('p').find('span:nth-child(2)').text();
+    //        $(".modal-title").text("Modify comment");
+            
+    //        $(".modal-body label").text("Your comment");
+    //        $(".modal-body textarea").show();
+    //        $('#modalComment').modal('show');
+
+    //        $("div.modal-footer button:first-child").removeClass(' btn btn-danger btn-ok');
+    //        $("div.modal-footer button:first-child").addClass('btn btn-success');
+           
+    //        $("#commentInput").val(comment);
+    //        $("div.modal-footer button:first-child").text('Submit comment');
+    //        creationdate = $(this).parent('p').find('span:nth-child(3)').text();
+
+    //    }
+    //    else {
+    //        $("div.modal-footer button:first-child").removeClass(' btn btn-success');
+    //        $("div.modal-footer button:first-child").addClass('btn btn-danger btn-ok');
+    //        $("div.modal-footer button:first-child").text('Delete');
+    //        $(".modal-title").text("Delete comment");
+    //        $(".modal-body label").text("Do you really want to delete the comment?");
+    //        $(".modal-body textarea").hide();
+    //        $('#modalComment').modal('show');
+    //        deletedate = $(this).parent('p').find('span:nth-child(3)').text();
+    //        }
+        
+    //});
+
+    $('p').on('click', function () {
+
+        var hili = $(this).css('background-color');
+        $("#partialcom").find("p").css('background-color', '');
+        $("#partialcom").find("p").find("button").hide();
+        if (hili != 'rgb(255, 193, 7)') {
+            $(this).css('background-color', 'rgb(255, 193, 7)');
+            $(this).find("button").show();
+
+
+        }
+        else {
+
+            $(this).css('background-color', 'rgb(255, 255,255)');
+
+            $(this).find("button").hide();
+
+
+        }
+
+    });
+
+
+    function subStrAfterChars(str, char, pos) {
+        if (pos == 'b')
+            return str.substring(str.indexOf(char) + 1);
+        else if (pos == 'a')
+            return str.substring(0, str.indexOf(char));
+        else
+            return str;
+    }
+
+  
+//    function printPage() {
+//        var content = document.getElementById("main").innerHTML;
+//        var css = "", i, j, c = document.getElementById("main").cloneNode(true);
+//        for (i = 0; i < c.childNodes.length; i++) {
+//            if (c.childNodes[i].nodeType == 1 && (c.childNodes[i].getAttribute("id") == "mainLeaderboard" || c.childNodes[i].getAttribute("id") == "midcontentadcontainer")) {
+//                c.removeChild(c.childNodes[i]);
+//                content = c.innerHTML;
+//            }
+//        }
+//        var head = document.getElementsByTagName("head")[0].innerHTML;
+//        var myWindow = window.open('', '', '');
+//        myWindow.document.write("<html><head>" + head + "<style>body{padding:15px;} @@media print {.printbtn {display:none;}}</style></head><body><button class='printbtn' onclick='window.print()'>Print Page</button><br><br>" + content + "<p><a href='/about/about_copyright.asp'>Copyright 1999-2019</a> by Refsnes Data. All Rights Reserved.</p></body></html>");
+//}
+
+</script>

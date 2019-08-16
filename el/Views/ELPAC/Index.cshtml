@@ -1,0 +1,320 @@
+﻿@model *******.Models.*******Report
+
+@{
+    List<string> Allmail = new List<string>();
+    
+  
+    
+    }
+
+@section headersection {
+    
+   @Styles.Render("~/bundles/tablesortercss")
+        @Styles.Render("~/Content/css")  
+        @Styles.Render("~/Content/libcss")
+        @Scripts.Render("~/bundles/jquery")
+        @Scripts.Render("~/bundles/jqueryval")
+        @Scripts.Render("~/bundles/jqueryui")
+        @Scripts.Render("~/bundles/tablesorter") 
+        @Scripts.Render("~/bundles/modernizr")
+        @Scripts.Render("~/bundles/bootstrap")
+
+    
+
+}
+
+<style>
+body {
+  font: 16px Arial;  
+}
+
+
+
+.inner
+{
+    display: inline-block;
+}
+
+</style>
+
+@{
+    
+
+    string CSVString = "Lastname;Firstname;Country;Organization;******* Admin;******* Paper 1;******* Paper 2 (OPE);******* Paper 2 (ELE);******* Paper 3 (L6E-OPE);******* paper 3 (L6E-ELE);Last Accreditation course end date;Last Refresher course end date; Last online Refresher course end date; Last L6E course end date\r\n";
+    if (Model.Results != null) { 
+        
+        foreach (*******.Models.ExaminerOverview examiner in Model.Results)
+        {
+           
+            CSVString += examiner.Lastname.ToString().Replace(";", ",") + ";" + examiner.Firstname.ToString().Replace(";", ",") + ";" + examiner.Country.ToString().Replace(";", ",") + ";" + examiner.Organization.ToString().Replace(";", ",") + ";" + examiner.is*******admin.ToString().Replace(";", ",") + ";" + examiner.is*******paper1.ToString().Replace(";", ",") + ";" + examiner.is*******paper2ele.ToString().Replace(";", ",") + ";" + examiner.is*******paper2ope.ToString().Replace(";", ",") + ";" + examiner.is*******paper3ele.ToString().Replace(";", ",") + ";" + examiner.is*******paper3ope.ToString().Replace(";", ",") + ";" + examiner.maxACRenddate.ToString().Replace(";", ",") + ";" + examiner.maxREFenddate.ToString().Replace(";", ",") + ";" + examiner.maxL6Eenddate.ToString().Replace(";", ",") + ";" + "\r\n";
+
+        }
+
+        
+    }
+ }   
+   
+
+
+    <section class="featured">
+        <div class="content-wrapper">
+            <hgroup class="title">
+                <h1>******* Competency Monitoring</h1>
+                <h5></h5>
+            </hgroup>
+        </div>
+    </section>
+
+
+
+
+    <div id="grid"> 
+        
+          
+         @if (ViewData.ModelState.IsValid)
+         {
+            
+             if (Model.data.ContainsKey("Firsttable"))
+             {
+                 
+                     System.Data.DataTable result = Model.data["Firsttable"].Tables[0];
+                 
+                 
+
+             if(!(Model.user.is*******FoP() || Model.user.isFoPOf*******LicencedOrg().Count>0))    {
+             
+             <div  id="formButton" style="width:100%; margin-top: 3px;">
+          
+                  <input  type="button" id="add" class="btn btn-primary" style="background-color: #337ab7" onclick="location.href = 'mailto:ians.reservation@*******.int?subject=ACTION:%20Create%20cost%20center&body=Dear%20CRO%20,%0A%0AA%20new%20organisation%20has%20signed%20a%20license%20to%20use%20*******.%20Please%20create%20them%20as%20costcentre,%20so%20they%20appear%20in%20the%20*******%20Competency%20Scheme.%0A%0AName%20of%20the%20organisation:%0AName%20of%20the%20*******%20Focal%20Point:%0AEmail%20of%20the%20*******%20Focal%20Point:%0AOptional:%20Name%20and%20email%20of%20the%20*******%20deputy:%0A%0AIf%20the%20*******%20Focal%20Point%20or%20deputy%20does%20not%20yet%20have%20a%20Training%20Zone%20login,%20please%20create%20one%20for%20them.%0A%0AThank%20you%20,%0AKind%20Regards%20,%0A%0APieke%20Satijn'" value="Add Organization"/>
+                
+ <button type="button" class="btn btn-primary" id="edit" style="display: none" onclick="editorg()">Edit Organization</button>
+ <button type="button" class="btn btn-primary"  style="font-size: 11px;" onclick="location.href='@Url.Action("RefreshData", "*******")'"> Refresh data </button>
+               
+
+            
+              
+                 <div class="inner">
+                  @using (Html.BeginForm("Exportcsv", "*******", FormMethod.Post, new { @class = "nospin" }))
+                  {
+        <input type="hidden" name="csv" value="@CSVString" />
+        <button class="btn btn-primary" type="submit" style="margin-right: 3px"><span aria-hidden="true" class="fa fa-file-excel-o"></span> Export examiners overview</button>
+                     
+                  } </div><div class="inner"> <button type="button" id="allmail" class="btn btn-primary" onclick="allmail()"><span aria-hidden="true"  class="glyphicon glyphicon-envelope"></span> Mail all ******* FoP</button></div>
+                  
+                
+         <div class="inner" style="float:right; ">
+
+                @using (Html.BeginForm("AutocompleteCertificate", "*******", FormMethod.Post, new { @class = "nospin" }))
+                {<div class="inner" >
+                    <input id="selected" list="exas" name="exas" placeholder="Type examiner's name" style="height:30px; margin-top:10px; font-size: 0.85em"  spellcheck="false" value="">
+                    <datalist id="exas" style="height:90px">
+                         
+                        @foreach (KeyValuePair<string, string> row in Model.examinerid)
+                        {            @:<option selected="selected" data-value="@row.Value">@row.Key</option>
+                         
+     }
+                    </datalist></div>
+               <div class="inner"><input type="hidden" name="selected-hidden" id="selected-hidden" ></div>
+                <div class="inner"><button type="submit" class="btn btn-primary" id="search"> Search </button></div>
+          
+                  }
+                 
+           </div>
+
+          </div>
+         }
+             
+       
+            <table id="mainTable">
+                  
+                <thead>
+                    <tr>
+                        <th>Country</th>
+                        <th>Organization</th>                        
+                        <th>******* Focal Point</th>
+                        <th>Deputy ******* Focal Point</th>
+                      
+
+                    </tr>
+                </thead>
+                <tbody>
+
+
+                @foreach (System.Data.DataRow row in result.Rows)
+                {
+
+                    if (!Allmail.Contains(Convert.ToString(row["*******_Email"])))
+                    {
+                        Allmail.Add(Convert.ToString(row["*******_Email"]));
+                    };
+                    
+                    <tr>
+                        
+                    <td >@Convert.ToString(row["Country"]).ToUpper()</td>
+
+                   
+                         @if (Convert.ToString(row["Organization"]) == null || Convert.ToString(row["Organization"]) == "")
+                         {
+                    
+                     <td>@(Convert.ToString(row["Internal_id"]).Substring(3, (Convert.ToString(row["Internal_id"]).Length - 3)))</td>
+                    
+                         }
+                         else if ((Int32)(row["Examiners' number"]) > 0)
+                         {<td class="reportHelp" id="org" title="@(Convert.ToString(row["Organization"]))">@Html.ActionLink(row["Organization"].ToString(), "Personrole", "*******", new { id = row                           ["Stakeholder_id"].ToString() }, null)</td>
+                   
+                         }
+                        
+                         
+                         else
+                         {
+                        <td>@(Convert.ToString(row["Organization"]))</td>
+                         }
+                     
+                  
+                     @if (Convert.ToString(row["*******_Focal_Point"]) != "")
+                     {
+                            
+                    <td class="reportHelp"  title="@(Convert.ToString(row["*******_Focal_Point"]))"><a href="mailto:@Convert.ToString(row["*******_Email"])">@Convert.ToString(row["*******_Focal_Point"])</a></td>
+                     }
+                     else
+                     {
+                    <td class="reportHelp" title="@(Convert.ToString(row["*******_Focal_Point"]))">@Convert.ToString(row["*******_Focal_Point"])</td>
+                     }
+
+
+                        @if (Convert.ToString(row["*******_Deputy_Focal_Point"]) != "")
+                        {
+                         <td class="reportHelp"  title="@(Convert.ToString(row["*******_Deputy_Focal_Point"]))"><a href="mailto:@Convert.ToString(row["*******_Fop_Dep_Email"])">@Convert.ToString(row["*******_Deputy_Focal_Point"])</a></td>
+                        }
+                        
+                                                else{
+                    <td class="reportHelp" title="@(Convert.ToString(row["*******_Deputy_Focal_Point"]))">@Convert.ToString(row["*******_Deputy_Focal_Point"])</td>
+                        }
+                    <td id="cost" style="display: none">@Convert.ToString(row["Internal_id"])</td>
+                   
+                        
+                </tr>      
+                }
+                </tbody>
+
+            </table>  
+                
+             }
+
+             }
+          
+ </div>
+
+  
+
+<script type="text/javascript">
+   
+    var table = document.getElementsByTagName("table")[0];
+    var tbody = table.getElementsByTagName("tbody")[0];
+    var org = "";
+    var cost = "";
+    var id = 0;
+    
+
+  
+
+
+    function editorg() {
+
+        window.location.href = 'mailto:ians.reservation@*******.int?subject=ACTION:%20Edit%20cost%20center%20[%20' + cost + ']&body=Dear%20CRO%20,%0A%0AThe%20*******%20focal%20point%20or%20deputy%20focal%20point%20of%20the%20organisation %20' + org + ' %20has%20changed.%20Please%20modify%20them%20in%20the%20stakeholder%20management%20tool%20.%0A%0A Name%20of%20the%20new%20*******%20Focal%20Point:%0A Email%20of%20the%20new%20*******%20Focal%20Point:%0A Optional:%20Name%20and%20email%20of%20the%20new%20*******%20deputy:%0A%0A If%20the%20new%20*******%20Focal%20Point%20or%20deputy%20does%20not%20yet%20have%20a%20Training%20Zone%20login,%20please%20create%20one%20for%20them.%0A%0A Thank%20you,%0A Kind%20Regards,%0A%0A Pieke%20Satijn';
+    };
+
+
+
+    function allmail() {
+
+        window.location.href = 'mailto:*******@*******.int?bcc=' + '@string.Join(";", Allmail)';
+        var emails = window.location.href;
+        if (emails.length > 1900) {
+
+            var Emailaddresses = window.open('', "Email", "scrollbars=yes,width=950,height=800");
+            Emailaddresses.document.open("text/html", "new");
+            Emailaddresses.document.title = "Report";
+            Emailaddresses.document.write("There are too much email addresses. We cannot open an email for you, please copy the list of email addresses below in BCC of a new email<BR><BR><BR>" + emails.replaceAll(";", "; "));
+
+        }
+    };
+
+    $(document).ready(function (e) {
+        var $input = $('#selected');
+
+        $input.val.length>1 ? location.reload(true) : $input.val('');
+    });
+
+
+    $(document).ready(function () {
+
+        $("#mainTable").tablesorter({
+            theme: "blue",
+            serverSideSorting: false,
+            sortMultiSortKey: "shiftKey",
+            widgets: ['zebra', 'stickyHeaders', 'filter', 'columnSelector'],
+            widgetOptions: {
+                widthFixed: false,
+                filter_onlyAvail: 'filter-onlyAvail',
+                
+            }
+
+        });
+
+        $("#mainTable tr").not('thead tr').on('click', function (e) {
+
+            var hili = $(this).find("td").css('background-color');
+            $("#mainTable tr").find("td").css('background-color', '');
+            if (hili != 'rgb(255, 193, 7)') {
+                $(this).find("td").css('background-color', '#FFC107');
+                $("#add").hide();
+                $("#edit").show();
+                $("#edit").css('background-color', '#FFC107')
+            }
+            else {
+                $(this).find("td").css('background-color', '');
+                $("#add").show();
+                $("#edit").hide();
+
+            }
+            org = $(this).find("#org").text();
+            cost = $(this).find("#cost").text()
+
+        });
+
+
+       
+    });
+    
+       
+        $('input[list]').on('input', function (e) {
+            var $input = $(e.target),
+                $options = $('#' + $input.attr('list') + ' option'),
+                $hiddenInput = $('#' + $input.attr('id') + '-hidden'),
+                label = $input.val();
+
+            $hiddenInput.val(label);
+           
+            for (var i = 0; i < $options.length; i++) {
+                var $option = $options.eq(i);
+
+                if ($option.text() === label) {
+                    $hiddenInput.val($option.attr('data-value'));
+                    
+                    id = $hiddenInput.val();
+                    break;
+                }
+            }
+        });
+       
+        //$('#search').on("click", function () {
+            
+        //        $('#exas option').arguments('selected', function () {
+        //            return this.defaultSelected;
+             
+        //    });
+        //});
+</script>
+
+         

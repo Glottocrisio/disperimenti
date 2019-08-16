@@ -1,0 +1,600 @@
+﻿@model *******.Models.*******Report
+
+@{
+ 
+    int nbResult = 0;
+   
+    var tempUser = Session["User"] as CustomsBasis.Models.User;
+}
+
+@section headersection {
+    
+            @Styles.Render("~/bundles/tablesortercss")
+            @Styles.Render("~/Content/css")  
+            @Styles.Render("~/Content/libcss")
+            @Scripts.Render("~/bundles/jquery")
+            @Scripts.Render("~/bundles/jqueryval")
+            @Scripts.Render("~/bundles/jqueryui")
+            @Scripts.Render("~/bundles/bootstrap")
+            @Scripts.Render("~/bundles/tablesorter") 
+            @Scripts.Render("~/bundles/modernizr")
+    
+ <!-- <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"> -->
+
+      <link  rel="stylesheet" type="text/css" href="@Url.Content("~/Styles/bootstrap.min.css")"/>
+}
+
+<style>
+body {
+  font: 16px Arial;  
+}
+
+
+.inner
+{
+    display: inline-block;
+}
+
+
+    span {
+    
+   -webkit-print-color-adjust: exact;
+    }
+     
+                 
+    .spanvalid { color: #99CC00; }
+    .spanattention { color: #FF9933; }
+    .spanpriority { color: #CC0033 ; }
+    .spanoverdue { color: #808080; }
+    #legend {
+            display: none;
+        }
+    span.heading {
+
+    }
+
+    @@media print {
+        .spanvalid, .spanvalid:before { color: #99CC00 !important; }
+        .spanattention, .spanattention:before { color: #FF9933 !important; }
+        .spanpriority, .spanpriority:before { color: #CC0033 !important; }
+        .spanoverdue, .spanoverdue:before { color: #808080 !important; }
+        #legend {
+            display: inline;
+        }
+
+    }
+</style>
+
+@section featured {
+     <img id="headerimage" src="@VirtualPathUtility.ToAbsolute("~/")Images/HeaderListOfParticipant.jpg" style="margin-left:auto;margin-right:auto;display:none;" />
+    <section class="featured">
+        <div class="content-wrapper">
+            <hgroup class="title">
+                <h1>******* Competency Monitoring</h1>
+                
+            </hgroup>
+        </div>
+    </section>
+    }
+                
+
+@{
+    
+    
+    string CVString = "Country;" + Model.Resultsmall[0].Country.ToString().Replace(";", ",") + "\nOrganization;" + Model.Resultsmall[0].Organization.ToString().Replace(";", ",") + "\n\n";
+
+    CVString = CVString + "Lastname;Firstame;******* Admin;******* Paper 1;******* Paper 2(OPE);******* Paper 2(ELE);******* Paper 3(L6E-OPE);******* Paper 3(L6E-ELE);MAX-ACR-Enddate; Last Refresher course enddate; Last Online Refresher course enddate; Last L6E course enddate\r\n";
+
+    if (Model.Results == null) { }
+    else
+    {
+        foreach (*******.Models.ExaminerOverview examiner in Model.Resultsmall)
+        {
+
+            CVString += examiner.Lastname.ToString().Replace(";", ",") + ";" + examiner.Firstname.ToString().Replace(";", ",") + ";" + examiner.is*******admin.ToString().Replace(";", ",") + ";" + examiner.is*******paper1.ToString().Replace(";", ",") + ";" + examiner.is*******paper2ele.ToString().Replace(";", ",") + ";" + examiner.is*******paper2ope.ToString().Replace(";", ",") + ";" + examiner.is*******paper3ele.ToString().Replace(";", ",") + ";" + examiner.is*******paper3ope.ToString().Replace(";", ",") + ";" + examiner.maxACRenddate.ToString().Replace(";", ",") + ";" + examiner.maxREFenddate.ToString().Replace(";", ",") + ";" + examiner.maxL6Eenddate.ToString().Replace(";", ",") + ";" + "\r\n";
+
+        }
+    }
+ }   
+                                                                                   
+    <div id="grid"> 
+     
+
+        @if (Model.data.ContainsKey("Secondtable"))
+        {
+            System.Data.DataTable result = Model.data["Secondtable"].Tables[0];
+            nbResult = result.Rows.Count;
+            if (nbResult == 0)
+            { 
+                      <h3>        </h3>
+                <h5 > No ******* examiner has been found in this organization. Please refine your request.    </h5>
+              
+                
+                 <button type="button" class="btn btn-primary"  style="font-size: 11px;" onclick="location.href='@Url.Action("Index", "*******")'"> Back </button>
+            
+                  <button type="button"  >Add examiner</button>
+            }
+            else
+            {
+                
+              
+                                         
+             
+            
+
+                    <div class="inner" style="margin-top:20px;">     <button type="button" class="btn btn-primary"  style="font-size: 11px; " onclick="location.href='@Url.Action("Index", "*******")'"> Back </button>
+
+                <button id="print" type="button" class="btn btn-primary" >Print</button>  <!-- add authentication to make it just for FoP -->
+                @*   <button type="button" class="btn btn-primary" id="getcoc" style="display: none"  >Print Certificate of Competence</button>
+
+               <button id="reset">reset</button>*@
+
+                 <div class="inner">
+                 @using (Html.BeginForm("Exportcsv", "*******", FormMethod.Post, new { @class = "nospin" }))
+                 {
+      <input type="hidden" name="csv" value="@CVString" /> 
+       <button class="btn btn-primary" type="submit"><span aria-hidden="true" class="fa fa-file-excel-o"></span> Export organization overview</button>
+
+                 
+                     
+                 }</div> <!-- add authentication to make it just for pieke-->
+          <!--      <button class="download btn btn-large btn-primary" type="button"><span class="glyphicon glyphicon-floppy-disk"></span> Export to CSV</button> -->
+           
+  @if(Model.user.is*******FoP()){
+                <div class="inner">  <button type="button"  onclick="requestform()" class="btn btn-primary">Add examiner</button></div>
+            }
+            else
+            {  
+            }
+                  
+
+              
+
+            </div>
+
+                 if (Model.data.ContainsKey("orginfo"))
+                 {
+              <div>
+
+              <h3 style="margin-bottom:7px; margin-top:20px " title="@Convert.ToString(Model.data["orginfo"].Tables[0].Rows[0]["Organization"])"> Organization:
+                  @Convert.ToString(Model.data["orginfo"].Tables[0].Rows[0]["Organization"]) 
+                 </h3>
+                <p style="margin-bottom:auto" title="@Convert.ToString(Model.data["orginfo"].Tables[0].Rows[0]["Country"])">
+                            <span style="font-style:italic" > Country:       </span>          @Convert.ToString(Model.data["orginfo"].Tables[0].Rows[0]["Country"]) 
+                 </p>
+              <p id="fop" style="margin-bottom:auto" title="@Convert.ToString(Model.data["orginfo"].Tables[0].Rows[0]["*******_Focal_Point"])">
+                           <span style="font-style:italic" > ******* Focal Point:    </span>   @Convert.ToString(Model.data["orginfo"].Tables[0].Rows[0]["*******_Focal_Point"]) 
+                 </p>
+              <p style="margin-bottom:30px" title="@Convert.ToString(Model.data["orginfo"].Tables[0].Rows[0]["*******_Deputy_Focal_Point"])">
+                            <span style="font-style:italic" > Deputy ******* Focal Point:    </span>  @Convert.ToString(Model.data["orginfo"].Tables[0].Rows[0]["*******_Deputy_Focal_Point"]) 
+                 </p>
+              
+              </div>}
+       
+
+
+            <table id="mainTable">
+
+                <thead>
+                    <tr>
+                        <th class="group-false">Name</th>
+                        <th>Administrator</th>                        <!--aggiungere qui una class per il grouping prendendo esempio dal table sorting-->
+                        <th>Paper 1 Marker</th>
+                        <th>Paper 2 ELE</th>
+                        <th>Paper 2 OPE</th>
+                        <th>Paper 3 ELE</th>
+                        <th>Paper 3 OPE</th>
+
+
+                    </tr>
+                </thead>
+                
+             
+
+                @foreach (System.Data.DataRow row in result.Rows)
+                {    
+                    
+                     <tr>
+               
+                   <td id="examiner" class="reportHelp" data-name="@row["Examiner"].ToString()" title="@row["Examiner"].ToString()">@Html.ActionLink(row["Examiner"].ToString(), "Certificate", "*******", new { id = row["person_id"].ToString() }, null)</td>
+                    @switch (Convert.ToBoolean(row["IS_*******_ADMIN"]))
+                    {
+
+                        case false:
+                    <td class="reportHelp" style=" ">  </td>
+                            break;
+
+                        case true:
+                                <td  class="reportHelp" style="   text-align:center" title="******* Administrator- No refresher needed" data-name="1"><span class="glyphicon glyphicon-ok  spanvalid"  ></span> </td>
+                    
+                   
+                            break;
+                    }
+
+                     @switch (Convert.ToString(row["IS_*******_PAPER1"]))
+                     {
+                         case "Valid":
+                     
+                          <td class="reportHelp" style="  text-align:center" title="Valid" data-name="1"><span class="glyphicon glyphicon-ok  spanvalid"  > </span> </td>
+                          break;
+                             break;
+                          case "Overdue":
+                     
+                                <td class="reportHelp" style=" text-align:center" title="Expired" data-name="4"><span class="glyphicon glyphicon-remove  spanoverdue"  ></span></td>
+                             break;
+                          default: 
+                                    <td class="reportHelp" style=" "   > </td>
+                             break;
+                     }
+                    
+                  @switch (Convert.ToString(row["*******_Paper_2_ELE"]))
+                  {
+
+                      case "Valid":
+                     
+                          <td class="reportHelp" style="  text-align:center" title="Valid" data-name="1"><span class="glyphicon glyphicon-ok  spanvalid"  > </span> </td>
+                          break;
+
+                      case "Attention required":
+                   
+                          <td class="reportHelp" style="  text-align:center" title="Attention required" data-name="2"><span class="glyphicon glyphicon-eye-open  spanattention"  ></span></td>
+                          break;
+                      case "Highest priority":
+                  <td class="reportHelp" style="  text-align:center" title="Highest priority" data-name="3"><span class="glyphicon glyphicon-warning-sign  spanpriority"  ></span></td>
+                          break;
+                      case "Overdue":
+                     
+                                <td class="reportHelp" style=" text-align:center" title="Expired" data-name="4"><span class="glyphicon glyphicon-remove  spanoverdue"  ></span></td>
+                          break;
+                      default: 
+                                    <td class="reportHelp" style=" "   > </td>
+                          break;
+                  }
+                
+                       @switch (Convert.ToString(row["*******_Paper_2_OPE"]))
+                       {
+
+
+                           case "Valid":
+                     
+                          <td class="reportHelp" style="   text-align:center" title="Valid" data-name="1"><span class="glyphicon glyphicon-ok  spanvalid"  > </span> </td>
+                               break;
+
+                           case "Attention required":
+                   
+                          <td class="reportHelp" style="  text-align:center" title="Attention required" data-name="2"><span class="glyphicon glyphicon-eye-open  spanattention"  ></span></td>
+                               break;
+                           case "Highest priority":
+                  <td class="reportHelp" style="  text-align:center" title="Highest priority" data-name="3"><span class="glyphicon glyphicon-warning-sign  spanpriority"  ></span></td>
+                               break;
+                           case "Overdue":
+                     
+                                <td class="reportHelp" style="  text-align:center" title="Expired" data-name="4"><span class="glyphicon glyphicon-remove  spanoverdue"  ></span></td>
+                               break;
+                           default: 
+                                    <td class="reportHelp" style=" "   > </td>
+                               break;
+                       } 
+                          @switch (Convert.ToString(row["*******_Paper_3_ELE"]))
+                          {
+
+
+                              case "Valid":
+                     
+                          <td class="reportHelp" style="   text-align:center" title="Valid" data-name="1"><span class="glyphicon glyphicon-ok  spanvalid"  > </span> </td>
+                                  break;
+
+                              case "Attention required":
+                   
+                          <td class="reportHelp" style="  text-align:center" title="Attention required" data-name="2"><span class="glyphicon glyphicon-eye-open  spanattention"  ></span></td>
+                                  break;
+                              case "Highest priority":
+                  <td class="reportHelp" style="  text-align:center" title="Highest priority" data-name="3"><span class="glyphicon glyphicon-warning-sign  spanpriority"  ></span></td>
+                                  break;
+                              case "Overdue":
+                     
+                                <td class="reportHelp" style="  text-align:center" title="Expired" data-name="4"><span class="glyphicon glyphicon-remove  spanoverdue"  ></span></td>
+                                  break;
+                              default: 
+                                    <td class="reportHelp"    > </td>
+                                  break;
+                          }
+                         
+                          @switch (Convert.ToString(row["*******_Paper_3_OPE"]))
+                          {
+
+
+                              case "Valid":
+                     
+                          <td class="reportHelp" style="  text-align:center" title="Valid" data-name="1"><span class="glyphicon glyphicon-ok  spanvalid"  > </span> </td>
+                                  break;
+
+                              case "Attention required":
+                   
+                          <td class="reportHelp" style="  text-align:center" title="Attention required" data-name="2"><span class="glyphicon glyphicon-eye-open  spanattention"  ></span></td>
+                                  break;
+                              case "Highest priority":
+                  <td class="reportHelp" style="  text-align:center" title="Highest priority" data-name="3"><span class="glyphicon glyphicon-warning-sign  spanpriority"  ></span></td>
+                                  break;
+                              case "Overdue":
+                     
+                                <td class="reportHelp" style="  text-align:center" title="Expired" data-name="4"><span class="glyphicon glyphicon-remove  spanoverdue"  ></span></td>
+                                  break;
+                              default: 
+                                    <td class="reportHelp"    > </td>
+                                  break;
+                          }  
+                          
+                       <td id="examinerID"  class="reportHelp" style="display: none"  title="@(Convert.ToString(row["person_id"]))">@(Convert.ToString(row["person_id"]))</td>
+                     
+                </tr>      
+                }
+                
+            </table>
+               
+            }
+        }
+           
+        <ul id="legend" style="display:none;list-style-type:none;page-break-inside:avoid" >
+      
+        <li><span class="glyphicon glyphicon-ok  spanvalid"></span> - Valid</li>
+        <li><span class="glyphicon glyphicon-eye-open  spanattention"> </span> - Attention required</li>
+         <li>  <span class="glyphicon glyphicon-warning-sign  spanpriority"></span> - Highest priority </li>
+          <li>  <span class="glyphicon glyphicon-remove  spanoverdue"></span> - Expired</li> 
+        </ul>
+    </div>
+
+        <div id="printdisclaimer" style="display: none; margin-top:100px">
+        <p>
+            <i>Printed on @DateTime.Now.Date.ToString("dd'/'MM'/'yyyy") by @tempUser.fullname</i><br/>
+            <b>Data Privacy:</b> This document contains personal data, it should be kept private and destroyed once no longer needed.    
+        </p>
+    </div>
+
+
+<script type="text/javascript">
+
+    
+    $(function () {
+        $.tablesorter.addParser({
+       
+            id: "dataname",
+            is: function (s, table, cell, $cell) {
+                return false;
+            },
+
+            
+        format: function (s, table, cell, cellIndex) {
+            
+            var $cell = $(cell);
+
+        
+
+                return $cell.attr('data-name');
+            
+
+        },
+        // flag for filter widget (true = ALWAYS search parsed values; false = search cell text)
+        parsed: false,
+        // set type, either numeric or text
+        type: 'numeric'
+    });
+
+       
+    $("#mainTable").tablesorter({
+        theme: "blue",
+        sortList: [[0]],
+        serverSideSorting: false,
+        sortMultiSortKey: "shiftKey",
+        widgets: ['zebra', 'stickyHeaders'],
+        headers: {
+          
+            1: { sorter: 'dataname' },
+            2: { sorter: 'dataname' },
+            3: { sorter: 'dataname' },
+            4: { sorter: 'dataname' },
+            5: { sorter: 'dataname' },
+            6: { sorter: 'dataname' },
+        },
+
+    });
+        //group_collapsible: true,
+        //group_collapsed: false,
+        ////group_months: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
+        //group_saveGroups: true,
+
+        //group_dateString: function (date) {
+        //    return date.toLocaleString();
+        //},
+
+        //group_callback: function ($cell, table) {
+
+        //  return  $(this).value($(this).value().toUpperCase);
+        //},
+
+        //output_separator: ';',         // ',' 'json', 'array' or separator (e.g. ';')
+
+        //output_hiddenColumns: true,       // include hidden columns in the output
+        //output_includeFooter: true,        // include footer rows in the output
+        //output_dataAttrib: 'data-name', // data-attribute containing alternate cell text
+        //output_headerRows: true,        // output all header rows (multiple rows)
+        //output_delivery: 'd',         // (p)opup, (d)ownload
+        //output_saveRows: ':not(.group-header)',         // (a)ll, (v)isible, (f)iltered or jQuery filter selector
+        //output_duplicateSpans: true,        // duplicate output data in tbody colspan/rowspan
+        //output_replaceQuote: '\u201c;',   // change quote to left double quote
+        //output_includeHTML: false,        // output includes all cell HTML (except the header cells)
+        //output_trimSpaces: false,       // remove extra white-space characters from beginning & end
+        //output_wrapQuotes: false,       // wrap every cell output in quotes
+        //output_popupStyle: 'width=800,height=600',
+
+
+
+
+
+
+    });
+
+   
+    var afop = "";
+    var personid = "";
+    
+    //function subStrAfterChars(str, char, pos) {
+    //    if (pos == 'b')
+    //        return str.substring(str.indexOf(char) + 1);
+    //    else if (pos == 'a')
+    //        return str.substring(0, str.indexOf(char));
+    //    else
+    //        return str;
+    //}
+
+
+    //previous JS function to send email to Pieke, like in the first view
+    //function addstaff() {
+    //    // if current user is ******* FoP
+    //    afop = subStrAfterChars(($('#fop').text()), ':', 'b')
+    //    window.location.href = 'mailto:pieke.satijn@eurocontrol.int?subject=ACTION:%20Add%20staff&body=Dear%20Mr.%20Satijn,%0A%0AA%20new%20user%20has%20signed%20a%20license%20to%20use%20*******.%20Please%20create%20him%20as%20user%20in%20the%20*******%20Competency%20Scheme.%0A%0AName%20of%20the%20Examiner:%0AName%20of%20the%20*******%20Focal%20Point:%0AEmail%20of%20the%20*******%20Focal%20Point:%0AName%20of%20the%20Examiner:%0A%0AIf%20the%20*******%20Focal%20Point%20or%20deputy%20does%20not%20yet%20have%20a%20Training%20Zone%20login,%20please%20create%20one%20for%20them.%0A%0AThank%20you%20,%0AKind%20Regards%20,%0A%0A' + afop;
+    //    // else if current user is Examiner redirect to https://trainingzone.eurocontrol.int/ilp/pages/coursedescription.jsf?courseId=6895442&catalogId=1121948
+    //}
+
+    function requestform() {
+
+        window.open("https://trainingzonetest.eurocontrol.int/ilp/pages/coursedescription.jsf?courseId=6895442&catalogId=1121948");
+    }
+
+    $('#print').on("click", function () {
+        var sp = $("td");
+      
+        $("#legend").show();
+        $("button").hide();
+        $("form").hide();
+       
+
+
+        $(".tablesorter-filter-row").hide();
+        $("span").show();
+        $('#printdisclaimer').show();
+        $('#headerimage').show();
+       
+        //switch (sp) {
+        //    case "glyphicon glyphicon-ok  spanvalid":
+        //        sp.addClass('spanvalid');
+        //    break;
+        //    case "glyphicon glyphicon-eye-open  spanattention":
+        //        sp.addClass('spanattention');
+        //        break;
+        //    case "glyphicon glyphicon-warning-sign  spanpriority": sp.addClass();
+        //        sp.addClass('spanpriority');
+        //        break;
+        //    case "glyphicon glyphicon-remove  spanoverdue":
+        //        sp.addClass('spanoverdue');
+        //        break;}
+    
+        //if (sp.attr('data-name')==1 && sp.find('span').hasClass("glyphicon glyphicon-ok  spanvalid")) {
+        //    sp.addClass('spanvalid');
+        //}
+        //else if (sp.attr("data-name") == 2 && sp.find('span').hasClass("glyphicon glyphicon-eye-open  spanattention")) {
+        //    sp.addClass("spanattention");
+        //}
+        //else if (sp.hasClass("glyphicon glyphicon-warning-sign  spanpriority")) {
+        //    sp.addClass("spanpriority");
+        //}
+        //else if (sp.hasClass("glyphicon glyphicon-remove  spanoverdue")) {
+        //    sp.addClass("spanoverdue");
+        //}
+      
+        window.print();
+        $("button").show();
+        $("form").show();
+        $("#legend").hide();
+        $("span[class!= 'heading']").hide();
+        $('#printdisclaimer').hide();
+        $('#headerimage').hide();
+       
+        //$("span").removeClass("spanvalid");
+        //$("span").removeClass("spanattention");
+        //$("span").removeClass("spanpriority");
+       
+        //$("span").removeClass("spanoverdue");
+        
+
+
+        $(".tablesorter-filter-row").show();
+               
+        location.reload();
+        
+    });
+
+
+
+    
+
+    
+
+     
+        $('#getcoc').on("click", function getcoc() {
+
+
+            $.ajax({
+                url: '@Url.Action("GetCertificate", "*******")',
+            data: {
+                personID: personid
+              },
+            type: 'post',
+            async: false,
+            success: function (data) {
+                window.location = '@Url.Action("getCertificateFile", "*******")'+'?personID=' + personid;
+                alert("Success");
+            },
+            error: function (data) {
+                alert('An error occured');
+            }
+        });
+
+        });
+
+        $("#mainTable tr").not('thead tr').on('click', function (e) {
+
+            var hili = $(this).find("td").css('background-color');
+            $("#mainTable tr").find("td").css('background-color', '');
+            if (hili != 'rgb(255, 193, 7)') {
+                $(this).find("td").css('background-color', '#FFC107');
+                //$("#print").hide();
+                //$("#getcoc").show();
+                //$("#getcoc").css('background-color', '#FFC107');
+                //personid = $(this).find("#examinerID").text();
+
+      
+               
+          
+            }
+             
+            //else {
+            //    location.reload();
+           
+            //    //$(this).find("td").css('background-color', '');
+            //    //$("#print").show();
+            //    //$("#getcoc").hide();
+
+            //}
+          // trova un modo per trovare Id e di li connettere direttamente alla funzione in controller tramite ajax call
+           
+        
+           
+            
+        });
+
+        $('#reset').click(function() {
+            $('#mainTable').trigger('sortReset');
+            return false;
+        })
+   
+ 
+
+  
+   
+
+   
+
+   
+</script>
+

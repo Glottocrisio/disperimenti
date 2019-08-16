@@ -1,0 +1,49 @@
+﻿
+@model List<*******.Models.commenti>
+
+
+
+ 
+
+@if(Model != null)
+{
+
+
+    
+    <body id="comments">
+
+
+        <div id="accordion">
+  <div class="card">
+    <div class="card-header" id="headingOne">
+      <h2 class="mb-0">
+        <button id="showcom" class="btn btn-link" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+          Comments
+        </button>
+      </h2>
+    </div>
+
+      
+
+
+    <div id="collapseOne" class="collapse" aria-labelledby="headingOne" data-parent="#accordion">
+    @foreach (*******.Models.commenti comment in Model)
+    {
+         <div class="list-group"><p class="list-group-item" title="Click on the comment to manage it" ><span style="font-style:italic"> @comment.upname </span> says: <span data-name="commen"> @comment.comment </span>    on <span data-name="date">  @Convert.ToDateTime(comment.creationdate).ToString("dd/MM/yyyy hh:mm:ss") </span>
+             
+              <button  style="float: right;margin-right:7px;display:none" class="reportHelp btn btn-primary comment" title="Update comment" data-action="update" data-comment="@comment.comment" data-id="@comment.id" >  <span class="glyphicon glyphicon-pencil"></span> </button>
+            
+
+     <button class="reportHelp btn btn-primary comment" title="Delete  comment"  style="float: right;margin-right:7px; display:none" data-action="delete" data-id="@comment.id" >
+         <span class="glyphicon glyphicon-remove"></span> </button>
+                 </p></div>
+       
+        
+    }
+    </div>
+    </div>
+    </div>
+</body>
+
+}
+

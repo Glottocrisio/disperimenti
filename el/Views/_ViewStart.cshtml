@@ -1,0 +1,10 @@
+﻿@{
+    string ActionName = ViewContext.RouteData.GetRequiredString("action");
+    string ControllerName = ViewContext.RouteData.GetRequiredString("controller");
+    if ((ActionName == "Error") && (ControllerName == "Core")) {
+    Layout = null;
+    } else {
+        Layout = "~/Views/Shared/_LayoutNoSecurityNoBundle.cshtml";   
+    }
+}
+
